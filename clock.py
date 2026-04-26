@@ -1,4 +1,5 @@
 # clock.py give real local time and date and auto synchronyse
+# need the esp32 to be connected to internet
 #
 # USE:
 #       import clock
