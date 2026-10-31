@@ -1,9 +1,11 @@
 # clock.py give real local time and date and auto synchronyse
-# need the esp32 to be connected to internet
 #
 # USE:
 #       import clock
 #       print(clock.get_time())
+#       print(clock.get_date())
+#       print(clock.get_date_time())
+#       print(clock.get_day())
 #
 
 import ntptime
@@ -61,7 +63,87 @@ def get_time():
 
     local = utime.localtime(t_sec)
 
+    return "{:02d}:{:02d}:{:02d}".format(
+    local[3], local[4], local[5]
+    )
+
+
+def get_date():
+    """
+    Returns local time string (auto-sync included)
+    """
+    _ensure_synced()
+
+    t = utime.localtime()
+
+    year, month, day = t[0], t[1], t[2]
+    hour, minute, second = t[3], t[4], t[5]
+
+    offset = TIMEZONE_OFFSET
+    if is_dst(year, month, day):
+        offset += DST_OFFSET
+
+    # apply timezone shift
+    t_sec = utime.mktime(t)
+    t_sec += offset * 3600
+
+    local = utime.localtime(t_sec)
+    
+    return "{:02d}-{:02d}-{:04d}".format(
+    local[2], local[1], local[0]
+    )
+
+
+def get_day():
+    """
+    Returns local time string (auto-sync included)
+    """
+    _ensure_synced()
+
+    t = utime.localtime()
+
+    year, month, day = t[0], t[1], t[2]
+    hour, minute, second = t[3], t[4], t[5]
+
+    offset = TIMEZONE_OFFSET
+    if is_dst(year, month, day):
+        offset += DST_OFFSET
+
+    # apply timezone shift
+    t_sec = utime.mktime(t)
+    t_sec += offset * 3600
+
+    local = utime.localtime(t_sec)
+    
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    day_name = days[local[6]]
+
+    return day_name
+
+def get_date_time():
+    """
+    Returns local time string (auto-sync included)
+    """
+    _ensure_synced()
+
+    t = utime.localtime()
+
+    year, month, day = t[0], t[1], t[2]
+    hour, minute, second = t[3], t[4], t[5]
+
+    offset = TIMEZONE_OFFSET
+    if is_dst(year, month, day):
+        offset += DST_OFFSET
+
+    # apply timezone shift
+    t_sec = utime.mktime(t)
+    t_sec += offset * 3600
+
+    local = utime.localtime(t_sec)
+
     return "{:02d}-{:02d}-{:04d} {:02d}:{:02d}:{:02d}".format(
         local[2], local[1], local[0],
         local[3], local[4], local[5]
     )
+
+
